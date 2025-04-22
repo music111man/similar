@@ -6,4 +6,23 @@
   
 */
 
-"titleSimilar" = "Similar";
+"titleSimilar" = "%@ Similar";
+"deleteSimilars" = "Delete %@ similars";
+"subTitlePhotos" = "%@ photos";
+"subTitleSelected" = "%@ selected";
+"selectAll" = "Select all";
+"deSelectAll" = "Deselect all";
+
+"titleAlertDelete" = "Allow \“Cleanup\” to delete %@ photos?";
+"subTitleAlertDelete" = "These photos will be deleted from iCloud Photos on all your devices.";
+"cancel" = "Cancel";
+"delete" = "Delete";
+
+"congratulations" = "Congratulations!";
+
+"youHaveDeleted" = "You have deleted\n";
+"savedUsingCleanup" = "Saved %@\nusing Cleanup";
+"minutes" = "%@ Minutes";
+"reviewMessage" = "Review all your photos. Sort the by size or date. See the ones that occupy the most space.";
+
+"great" = "Great";

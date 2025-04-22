@@ -12,7 +12,16 @@ enum LocalizableText: String, CustomStringConvertible {
     
     var description: String {
         NSLocalizedString(self.rawValue, comment: "")
+            .replacingOccurrences(of: " %@ ", with: " ")
+            .replacingOccurrences(of: "%@ ", with: "")
+            .replacingOccurrences(of: " %@", with: "")
     }
     
-    case titleSimilar
+    func with(value: some CustomStringConvertible) -> String {
+        NSLocalizedString(self.rawValue, comment: "").replacingOccurrences(of: "%@", with: "\(value)")
+    }
+    
+    case titleSimilar, deleteSimilars, subTitlePhotos, subTitleSelected, congratulations,
+         selectAll, deSelectAll, titleAlertDelete, subTitleAlertDelete, cancel, delete,
+         savedUsingCleanup, minutes, reviewMessage, great, youHaveDeleted
 }
