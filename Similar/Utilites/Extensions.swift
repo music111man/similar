@@ -168,3 +168,4 @@ func factoryView<UI: UIView>(_ typeOff: UI.Type = UIView.self) -> UI {
     
     return element
 }
+

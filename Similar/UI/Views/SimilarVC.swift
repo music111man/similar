@@ -9,6 +9,7 @@ import UIKit
 
 final class SimilarVC: UIViewController {
     
+    
     let titleLabel: UILabel = {
         let title = factoryView(UILabel.self)
         title.textResourceColor = .textLight
@@ -41,6 +42,8 @@ final class SimilarVC: UIViewController {
         return table
     }()
     
+    let similarManager = SimilarManager()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -69,17 +72,43 @@ final class SimilarVC: UIViewController {
         ])
         
         button.onTap {
+            let alert = UIAlertController(title: LocalizableText.titleAlertDelete.description,
+                                          message: LocalizableText.subTitleAlertDelete.description,
+                                          preferredStyle: .alert)
             
-            self.present(CongratulationVC(deletedCount: 10), animated: true)
-//            let alert = UIAlertController(title: LocalizableText.titleAlertDelete.description,
-//                                          message: LocalizableText.subTitleAlertDelete.description,
-//                                          preferredStyle: .alert)
-//            
-//            alert.addAction(UIAlertAction(title: LocalizableText.delete.description, style: .destructive) { _ in
-//                print("Tap delete!")
-//            })
-//            alert.addAction(UIAlertAction(title: LocalizableText.cancel.description, style: .cancel))
-//            self.present(alert, animated: true)
+            alert.addAction(UIAlertAction(title: LocalizableText.delete.description, style: .destructive) { _ in
+                self.present(CongratulationVC(deletedCount: 10), animated: true)
+            })
+            alert.addAction(UIAlertAction(title: LocalizableText.cancel.description, style: .cancel))
+            self.present(alert, animated: true)
+        }
+        
+        similarManager.presenter.delegate = self
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        Task {
+            await similarManager.showSimilar()
         }
     }
+}
+
+extension SimilarVC: StoragePresenterDelegate {
+    var checkedCount: Int {
+        get {
+            0
+        }
+        set {
+            button.isHidden = newValue > 0
+            
+            button.text = LocalizableText.deleteSimilars.with(value: checkedCount)
+        }
+    }
+    
+    func showImage(_ image: UIImage) {
+        print("===> showImage \(image.pngData()?.count ?? 0)")
+    }
+    
+    
 }
