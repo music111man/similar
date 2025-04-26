@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Combine
 
 final class SimilarViewModel {
     
@@ -14,10 +13,16 @@ final class SimilarViewModel {
     
     var photos = [PhotoViewModel]()
     
-    @Published var checkedCount = 0
+    var checkedCount = 0 {
+        didSet {
+            checkedAction()
+            checkedCountAction?(checkedCount)
+        }
+    }
 
     private var checkedAction: EmptyAction
     
+    private var checkedCountAction: ((Int) -> ())?
     
     init(_ checkedAction: @escaping EmptyAction) {
         self.checkedAction = checkedAction
@@ -27,14 +32,18 @@ final class SimilarViewModel {
         self.checkedAction = checkedAction
         files.forEach { createPhoto($0) }
     }
-    
+
+    func onCheck(_ action: @escaping (Int) -> ()) {
+        checkedCountAction = action
+    }
+  
     func createPhoto(_ path: String) {
         photos.append(PhotoViewModel(filePath: path, validateCheked))
     }
     
     func validateCheked() {
         checkedCount = photos.count(where: { $0.isChecked })
-        checkedAction()
+        
     }
 }
 

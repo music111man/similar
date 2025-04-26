@@ -10,19 +10,24 @@ import UIKit
 final class SimilarStorage {
     
     var similarCollection = [SimilarViewModel]()
+    var checkedCount: Int {
+        self.similarCollection.reduce(0, { partialResult, model in
+            partialResult + model.checkedCount
+        })
+    }
+    
     var action: ((Int) -> ())?
     
     init() {
         for i in (0...Int.random(in: 9...20)) {
-            var files = Array(repeating: "\(i)", count: Int.random(in: 2...6))
+            let files = Array(repeating: "\(i)", count: Int.random(in: 2...6))
             add(files)
         }
     }
     
     func add(_ files: [String]) {
         similarCollection.append(SimilarViewModel(files) {
-            let count = self.similarCollection.count(where: { $0.checkedCount > 0 })
-            self.action?(count)
+            self.action?(self.checkedCount)
         })
     }
     

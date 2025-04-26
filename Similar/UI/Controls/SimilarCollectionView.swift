@@ -14,6 +14,9 @@ class SimilarCollectionView: UICollectionView {
         translatesAutoresizingMaskIntoConstraints = false
         heightAnchor.constraint(equalToConstant: 215.height).isActive = true
         backgroundColor = .clear
+        showsVerticalScrollIndicator = false
+        showsHorizontalScrollIndicator = false
+        
     }
     
     required init?(coder: NSCoder) {
@@ -22,12 +25,12 @@ class SimilarCollectionView: UICollectionView {
     
     private static var collectionViewLayout: UICollectionViewLayout {
         
-        let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .absolute(183.width), heightDimension: .fractionalWidth(1)))
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension:  .absolute(183.width), heightDimension: .fractionalWidth(1)), subitem: item, count: 1)
+        let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .absolute(183.width), heightDimension: .absolute(215.height)))
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension:  .absolute(183.width), heightDimension: .absolute(215.height)), subitem: item, count: 1)
         group.interItemSpacing = .fixed(5.width)
         
         let section = NSCollectionLayoutSection(group: group)
-        //section.interGroupSpacing = 5.width
+        section.interGroupSpacing = 5.width
         let conf = UICollectionViewCompositionalLayoutConfiguration()
         conf.scrollDirection = .horizontal
     

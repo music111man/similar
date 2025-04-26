@@ -23,14 +23,13 @@ final class SimilarVC: UIViewController {
     let subTitleLabel: UILabel = {
         let title = factoryView(UILabel.self)
         title.textResourceColor = .textLight
-        title.text = LocalizableText.subTitlePhotos.with(value: 0) + " • " + LocalizableText.subTitlePhotos.with(value: 0)
         title.textAlignment = .left
         title.font = UIFont.systemFont(ofSize: 14.height, weight: .bold)
         
         return title
     }()
     
-    let button = SimilarButton(text: .deleteSimilars, image: .deletePhotos)
+    let button = SimilarButton(text: .deleteSimilars, image: .deletePhotos, isHidden: true)
     
     let table: UITableView = {
         let table = factoryView(UITableView.self)
@@ -38,14 +37,26 @@ final class SimilarVC: UIViewController {
         table.layer.cornerRadius = 20.width
         table.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         table.contentOffset = CGPoint(x: 0, y: 15.height)
+        table.allowsSelection = false
         
         return table
     }()
     
-    let similarManager = SimilarManager()
+    var similarManager: SimilarManagerProtocol!
+    
+    init() {
+        super.init(nibName: nil, bundle: nil)
+        similarManager = SimilarManagerFactory.createManager(presenterDelegate: self, routerDelegate: self)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        
         
         view.backgroundResourceColor = .background
         view.addSubview(titleLabel)
@@ -72,43 +83,45 @@ final class SimilarVC: UIViewController {
         ])
         
         button.onTap {
-            let alert = UIAlertController(title: LocalizableText.titleAlertDelete.description,
-                                          message: LocalizableText.subTitleAlertDelete.description,
-                                          preferredStyle: .alert)
-            
-            alert.addAction(UIAlertAction(title: LocalizableText.delete.description, style: .destructive) { _ in
-                self.present(CongratulationVC(deletedCount: 10), animated: true)
-            })
-            alert.addAction(UIAlertAction(title: LocalizableText.cancel.description, style: .cancel))
-            self.present(alert, animated: true)
+            Task {
+                await self.similarManager.deteteSimilar()
+            }
         }
+        button.isHidden = true
         
-        similarManager.presenter.delegate = self
+        Task {
+            await similarManager.searchSimilar()
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        Task {
-            await similarManager.showSimilar()
-        }
+        
     }
 }
 
-extension SimilarVC: StoragePresenterDelegate {
-    var checkedCount: Int {
+extension SimilarVC: StoragePresenterDelegate, RouterDelegate {
+    func presentView(_ controller: UIViewController) {
+        present(controller, animated: true)
+    }
+    
+    var topCountMessage: String {
         get {
-            0
+            subTitleLabel.text ?? ""
         }
         set {
-            button.isHidden = newValue > 0
-            
-            button.text = LocalizableText.deleteSimilars.with(value: checkedCount)
+            subTitleLabel.text = newValue
         }
     }
     
-    func showImage(_ image: UIImage) {
-        print("===> showImage \(image.pngData()?.count ?? 0)")
+    var checkedCountMessage: String? {
+        get {
+            button.text
+        }
+        set {
+            button.isHidden = newValue == nil
+            button.text = newValue
+        }
     }
-    
     
 }

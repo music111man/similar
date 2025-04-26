@@ -26,3 +26,9 @@
 "reviewMessage" = "Review all your photos. Sort the by size or date. See the ones that occupy the most space.";
 
 "great" = "Great";
+"searchSilimars" = "Search for similar photos...";
+
+"deleteSimmilars" = "Deleting similar photos comes...";
+"goToSettings" = "Settings";
+"enableAccess" = "Access to the gallery";
+"enableAccessDesc" = "The app requires full access to the gallery!";

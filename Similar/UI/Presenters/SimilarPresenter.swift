@@ -7,17 +7,37 @@
 
 import UIKit
 
+protocol SimilarPresenterDelegate: AnyObject {
+    var collection: UICollectionView { get }
+    var buttonText: LocalizableText? { get set }
+}
+
 final class SimilarPresenter: NSObject {
     
-    var model: SimilarViewModel?
+    weak var delegate: SimilarPresenterDelegate?
     
+    var model: SimilarViewModel? {
+        didSet {
+            model?.onCheck { count in
+                self.delegate?.buttonText = self.isAllChecked ? .deSelectAll : .selectAll
+            }
+            delegate?.collection.reloadData()
+        }
+    }
     private var tapAction: ((UIImage) ->())?
     
-    init(_ collectionView: UICollectionView) {
+    var isAllChecked: Bool {
+        guard let model else { return false }
+        
+        return model.checkedCount == model.photos.count
+    }
+    
+    init(_ delegate: SimilarPresenterDelegate) {
         super.init()
-        collectionView.delegate = self
-        collectionView.dataSource = self
-        collectionView.register(PhotoCell.self, forCellWithReuseIdentifier: PhotoCell.identifier)
+        self.delegate = delegate
+        self.delegate?.collection.delegate = self
+        self.delegate?.collection.dataSource = self
+        self.delegate?.collection.register(PhotoCell.self, forCellWithReuseIdentifier: PhotoCell.identifier)
     }
     
     func onTapImage(_ action: @escaping (UIImage) -> ()) {
@@ -35,7 +55,9 @@ extension SimilarPresenter: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoCell.identifier, for: indexPath) as! PhotoCell
         if let photo = model?.photos[indexPath.row] {
-            cell.configure(photo)
+            cell.configure(photo) { image in
+                self.tapAction?(image)
+            }
         }
         
         return cell

@@ -24,6 +24,26 @@ extension UIView {
         }
     }
     
+    func insetsIn(parent: UIView, top: Int = 0, bottom: Int = 0, left: Int = 0, right: Int = 0) {
+        self.translatesAutoresizingMaskIntoConstraints = false
+        parent.addSubview(self)
+        NSLayoutConstraint.activate([
+            topAnchor.constraint(equalTo: parent.topAnchor, constant: top.height),
+            bottomAnchor.constraint(equalTo: parent.bottomAnchor, constant: -bottom.height),
+            leftAnchor.constraint(equalTo: parent.leftAnchor, constant: left.width),
+            rightAnchor.constraint(equalTo: parent.rightAnchor, constant: -right.width)
+        ])
+    }
+    
+    func insetsInCenter(parent: UIView, offsetX: Int = 0, offsetY: Int = 0) {
+        self.translatesAutoresizingMaskIntoConstraints = false
+        parent.addSubview(self)
+        NSLayoutConstraint.activate([
+            centerXAnchor.constraint(equalTo: parent.centerXAnchor, constant: offsetX.width),
+            centerYAnchor.constraint(equalTo: parent.centerYAnchor, constant: offsetY.height)
+        ])
+    }
+    
     func onTap(animationDuration: TimeInterval = 0.1, _ action: @escaping() -> Void) {
         let tapGesture = GestureRecognizerForHandleTapOnView(target: self, action: #selector(makeTapForGestureForHandler(_:)))
         tapGesture.duration = animationDuration
@@ -57,6 +77,49 @@ extension UIView {
         }
         
     }
+    
+    var showActivity: Bool {
+        get {
+            subviews.last is UIActivityIndicatorView
+        }
+        set {
+            if newValue {
+                if subviews.last is UIActivityIndicatorView { return }
+                let activity = UIActivityIndicatorView()
+                activity.style = .large
+                activity.color = ColorResource.backgroundDark.color
+                activity.insetsInCenter(parent: self)
+                activity.startAnimating()
+            } else {
+                guard let activity = subviews.first(where: { $0 is UIActivityIndicatorView }) as? UIActivityIndicatorView else { return }
+                
+                activity.removeFromSuperview()
+            }
+        }
+    }
+    
+    var shadowPathLine: CGFloat? {
+        get { nil }
+        set {
+            guard let newValue else { return }
+            let shadowPath = CGMutablePath()
+            shadowPath.move(to: CGPoint(x: layer.shadowRadius,
+                                        y: -newValue))
+            shadowPath.addLine(to: CGPoint(x: layer.shadowRadius,
+                                           y: newValue))
+            shadowPath.addLine(to: CGPoint(x: layer.bounds.width - layer.shadowRadius,
+                                           y: newValue))
+            shadowPath.addLine(to: CGPoint(x: layer.bounds.width - layer.shadowRadius,
+                                           y: -newValue))
+                 
+            shadowPath.addQuadCurve(to: CGPoint(x: layer.shadowRadius,
+                                                y: -newValue),
+                                    control: CGPoint(x: layer.bounds.width / 2,
+                                                     y: newValue))
+                 
+            layer.shadowPath = shadowPath
+        }
+    }
 }
 
 extension UIButton {
@@ -78,7 +141,7 @@ extension UIButton {
             setTitle(newValue, for: .normal)
         }
     }
-    var textColor: ColorResource? {
+    var textResourceColor: ColorResource? {
         get { nil }
         set {
             guard let newValue else {
@@ -86,7 +149,7 @@ extension UIButton {
                 
                 return
             }
-            setTitleColor(nil, for: .normal)
+            setTitleColor(newValue.color, for: .normal)
         }
     }
     

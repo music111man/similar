@@ -8,20 +8,29 @@
 import UIKit
 
 protocol StoragePresenterDelegate: AnyObject {
-    var checkedCount: Int { set get }
+    var checkedCountMessage: String? { set get }
+    var topCountMessage: String { set get }
     var table: UITableView { get }
-    func showImage(_ image: UIImage)
+    
 }
 
 @MainActor
 final class StoragePresenter: NSObject {
-    
+    private var photoCount = 0
     var storage: SimilarStorage? {
         didSet {
-            
-            storage?.onCheck({ count in
-                self.delegate?.checkedCount = count
+            defer { delegate?.table.reloadData() }
+            guard let storage else {
+                delegate?.table.showActivity = true
+                self.formatCheckedCountMessage(nil)
+                return
+            }
+            storage.onCheck({ count in
+                self.formatCheckedCountMessage(count)
             })
+            photoCount = storage.similarCollection.flatMap { $0.photos }.count
+            self.formatCheckedCountMessage(0)
+            delegate?.table.showActivity = false
             delegate?.table.reloadData()
         }
     }
@@ -33,9 +42,36 @@ final class StoragePresenter: NSObject {
         }
     }
     
-    override init() {
-        super.init()
+    var openPhotoAction: ((UIImage) -> ())?
+    
+    
+    func openImage(_ action: @escaping (UIImage) -> ()) {
+        self.openPhotoAction = action
+
+    }
+    
+    private func formatCheckedCountMessage(_ count: Int?) {
+        guard let count else {
+            self.delegate?.topCountMessage = LocalizableText.searchSilimars.description
+            self.delegate?.checkedCountMessage = nil
+            return
+        }
+        self.delegate?.topCountMessage = LocalizableText.subTitlePhotos.with(value: photoCount) + " • " + LocalizableText.subTitlePhotos.with(value: count)
+        self.delegate?.checkedCountMessage = count == 0 ? nil : LocalizableText.deleteSimilars.with(value: count)
+    }
+    
+    @MainActor
+    func showDeleteProcess() async {
+        self.delegate?.table.showActivity = true
+        self.delegate?.checkedCountMessage = nil
+        self.delegate?.topCountMessage = LocalizableText.deleteSimmilars.description
         
+        self.delegate?.table.isUserInteractionEnabled = false
+    }
+
+    func showCongratulation() {
+        self.delegate?.table.showActivity = false
+        self.delegate?.table.isUserInteractionEnabled = true
     }
     
 }
@@ -52,7 +88,7 @@ extension StoragePresenter: UITableViewDataSource {
             
             cell.configure(storage.similarCollection[indexPath.row])
             cell.presenter.onTapImage { image in
-                self.delegate?.showImage(image)
+                self.openPhotoAction?(image)
             }
         }
         

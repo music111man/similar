@@ -13,10 +13,14 @@ final class PhotoViewModel {
     var isChecked: Bool = false {
         didSet {
             check()
+            signalToCheck?(isChecked)
         }
     }
     
     private var check: EmptyAction
+    
+    private var signalToCheck: ((Bool) ->())?
+    
     var image: UIImage {
         ImageResource.congratulations.image
     }
@@ -25,6 +29,10 @@ final class PhotoViewModel {
     internal init(filePath: String, _ action: @escaping EmptyAction) {
         self.filePath = filePath
         self.check = action
+    }
+    
+    func onChecked(_ action: @escaping (Bool) ->()) {
+        signalToCheck = action
     }
     
 }

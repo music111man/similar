@@ -25,33 +25,60 @@ final class SimilarButton: UIView {
         }
     }
     
-    init(text: LocalizableText, image resource: ImageResource? = nil) {
+    private let transformHide: CGAffineTransform = .init(scaleX: 0.01, y: 0.01)
+    
+    init(text: LocalizableText, image resource: ImageResource? = nil, isHidden: Bool = false) {
         super.init(frame: .zero)
+        
         translatesAutoresizingMaskIntoConstraints = false
         backgroundResourceColor = .backgroundDark
         layer.cornerRadius = 24.height
         title.localizableText = text
-        addSubview(title)
+        title.insetsInCenter(parent: self, offsetX: (resource == nil ? 0 : 24))
         NSLayoutConstraint.activate([
             heightAnchor.constraint(equalToConstant: 60.height),
-            title.centerYAnchor.constraint(equalTo: centerYAnchor),
-            title.centerXAnchor.constraint(equalTo: centerXAnchor, constant: resource == nil ? 0 : 24.width)
         ])
-        if let resource = resource {
-            let imageView = UIImageView(image: resource.image)
-            imageView.translatesAutoresizingMaskIntoConstraints = false
-            imageView.contentMode = .scaleAspectFit
-            addSubview(imageView)
-            NSLayoutConstraint.activate([
-                imageView.centerYAnchor.constraint(equalTo: centerYAnchor),
-                imageView.trailingAnchor.constraint(equalTo: title.leadingAnchor, constant: 0),
-                imageView.heightAnchor.constraint(equalTo: imageView.heightAnchor),
-                imageView.widthAnchor.constraint(equalToConstant: 24.width)
-            ])
-        }
+        guard let resource = resource else { return }
+        
+        let imageView = UIImageView(image: resource.image)
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.contentMode = .scaleAspectFit
+        addSubview(imageView)
+        NSLayoutConstraint.activate([
+            imageView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            imageView.trailingAnchor.constraint(equalTo: title.leadingAnchor, constant: 0),
+            imageView.heightAnchor.constraint(equalTo: imageView.heightAnchor),
+            imageView.widthAnchor.constraint(equalToConstant: 24.width)
+        ])
+        super.isHidden = isHidden
+        transform = isHidden ? transformHide : .identity
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override var isHidden: Bool {
+        get { super.isHidden }
+        set {
+            if newValue {
+                if !super.isHidden {
+                    UIView.animate(withDuration: 0.3) {
+                        self.transform = .init(scaleX: 0.01, y: 0.01)
+                    } completion: { _ in
+                        super.isHidden = true
+                    }
+                }
+                
+                return
+            }
+            if super.isHidden {
+                super.isHidden = false
+                self.transform = .init(scaleX: 0.01, y: 0.01)
+                UIView.animate(withDuration: 0.3) {
+                    self.transform = .identity
+                }
+            }
+        }
     }
 }
