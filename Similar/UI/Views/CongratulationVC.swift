@@ -10,7 +10,8 @@ import UIKit
 final class CongratulationVC: UIViewController {
 
     let image: UIImageView = {
-        let view = factoryView(UIImageView.self)
+        let view = UIImageView()
+        view.translatesAutoresizingMaskIntoConstraints = false
         view.contentMode = .scaleAspectFit
         view.image = UIImage.congratulations
         NSLayoutConstraint.activate([
@@ -22,8 +23,9 @@ final class CongratulationVC: UIViewController {
     }()
     
     let titleLabel: UILabel = {
-        let title = factoryView(UILabel.self)
-        title.textResourceColor = .textDark
+        let title = UILabel()
+        title.translatesAutoresizingMaskIntoConstraints = false
+        title.textColor = UIColor.textDark
         title.localizableText = .congratulations
         title.textAlignment = .center
         title.font = UIFont.systemFont(ofSize: 36.height, weight: .bold)
@@ -32,8 +34,9 @@ final class CongratulationVC: UIViewController {
     }()
     
     let subLabel: UILabel = {
-        let title = factoryView(UILabel.self)
-        title.textResourceColor = .textGray
+        let title = UILabel()
+        title.translatesAutoresizingMaskIntoConstraints = false
+        title.textColor = UIColor.textGray
         title.localizableText = .reviewMessage
         title.textAlignment = .center
         title.font = UIFont.systemFont(ofSize: 16.height, weight: .medium)
@@ -119,8 +122,9 @@ final class CongratulationVC: UIViewController {
     }
     
     private func subTitle(text: String, seklected: String) -> UILabel {
-        let title = factoryView(UILabel.self)
-        title.textResourceColor = .textDark
+        let title = UILabel()
+        title.translatesAutoresizingMaskIntoConstraints = false
+        title.textColor = UIColor.textDark
         title.localizableText = .congratulations
         title.textAlignment = .center
         title.font = UIFont.systemFont(ofSize: 20.height, weight: .regular)

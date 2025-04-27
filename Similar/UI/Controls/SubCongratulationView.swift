@@ -11,11 +11,13 @@ final class SubCongratulationView: UIView {
     let imageView: UIImageView
     var animate = false
     init(image: UIImage, text: String, selected: String) {
-        imageView = factoryView(UIImageView.self)
+        imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
         super.init(frame: .zero)
         translatesAutoresizingMaskIntoConstraints = false
         
-        let textLabel = factoryView(UILabel.self)
+        let textLabel = UILabel()
+        textLabel.translatesAutoresizingMaskIntoConstraints = false
         textLabel.numberOfLines = 0
         textLabel.lineBreakMode = .byWordWrapping
         

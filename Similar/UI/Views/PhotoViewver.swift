@@ -11,7 +11,8 @@ import Photos
 final class PhotoViewver: UIViewController {
     
     let imageView: UIImageView = {
-        let image = factoryView(UIImageView.self)
+        let image = UIImageView()
+        image.translatesAutoresizingMaskIntoConstraints = false
         image.contentMode = .scaleAspectFit
         
         return image

@@ -10,8 +10,9 @@ import UIKit
 final class SimilarCell: UITableViewCell {
     
     let titleLabel: UILabel = {
-        let title = factoryView(UILabel.self)
-        title.textResourceColor = .textDark
+        let title = UILabel()
+        title.translatesAutoresizingMaskIntoConstraints = false
+        title.textColor = UIColor.textDark
         title.localizableText = .titleSimilar
         title.textAlignment = .left
         title.font = UIFont.systemFont(ofSize: 24.height, weight: .bold)
@@ -20,7 +21,8 @@ final class SimilarCell: UITableViewCell {
     }()
     
     let button: UIButton = {
-        let button = factoryView(UIButton.self)
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
         button.textColor = UIColor.textSelected
         button.localizableText = .selectAll
         button.font = UIFont.systemFont(ofSize: 16.height, weight: .medium)

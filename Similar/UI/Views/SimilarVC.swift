@@ -11,8 +11,9 @@ final class SimilarVC: UIViewController {
     
     
     let titleLabel: UILabel = {
-        let title = factoryView(UILabel.self)
-        title.textResourceColor = .textLight
+        let title = UILabel()
+        title.translatesAutoresizingMaskIntoConstraints = false
+        title.textColor = UIColor.textLight
         title.localizableText = .titleSimilar
         title.textAlignment = .left
         title.font = UIFont.systemFont(ofSize: 28.height, weight: .bold)
@@ -21,8 +22,9 @@ final class SimilarVC: UIViewController {
     }()
     
     let subTitleLabel: UILabel = {
-        let title = factoryView(UILabel.self)
-        title.textResourceColor = .textLight
+        let title = UILabel()
+        title.translatesAutoresizingMaskIntoConstraints = false
+        title.textColor = UIColor.textLight
         title.textAlignment = .left
         title.font = UIFont.systemFont(ofSize: 14.height, weight: .bold)
         
@@ -32,7 +34,8 @@ final class SimilarVC: UIViewController {
     let buttonDelete = SimilarButton(text: .deleteSimilars, image: .deletePhotos, isHidden: true)
     
     let table: UITableView = {
-        let table = factoryView(UITableView.self)
+        let table = UITableView()
+        table.translatesAutoresizingMaskIntoConstraints = false
         table.backgroundColor = UIColor.backgroundLight
         table.layer.cornerRadius = 20.width
         table.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
@@ -43,13 +46,15 @@ final class SimilarVC: UIViewController {
         return table
     }()
     let buttonRefresh: UIImageView = {
-        let buttonRefresh = factoryView(UIImageView.self)
+        let buttonRefresh = UIImageView()
+        buttonRefresh.translatesAutoresizingMaskIntoConstraints = false
         
         return buttonRefresh
     }()
     
     let settingsLabel: UILabel = {
-        let label = factoryView(UILabel.self)
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = UIColor.textLight
         label.font = UIFont.systemFont(ofSize: 11.height, weight: .medium)
         label.textAlignment = .center
@@ -58,7 +63,8 @@ final class SimilarVC: UIViewController {
     }()
     
     let settings: UIStepper = {
-        let stepper = factoryView(UIStepper.self)
+        let stepper = UIStepper()
+        stepper.translatesAutoresizingMaskIntoConstraints = false
         stepper.maximumValue = 90
         stepper.minimumValue = 10
         stepper.stepValue = 5

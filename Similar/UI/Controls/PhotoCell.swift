@@ -10,7 +10,8 @@ import Photos
 
 final class PhotoCell: UICollectionViewCell {
     let imageView: UIImageView = {
-        let imageView = factoryView(UIImageView.self)
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.backgroundColor = .backPhoto
         imageView.contentMode = .scaleAspectFill
         imageView.layer.cornerRadius = 14.width

@@ -9,8 +9,9 @@ import UIKit
 
 final class SimilarButton: UIView {
     let title: UILabel = {
-        let title = factoryView(UILabel.self)
-        title.textResourceColor = .textLight
+        let title = UILabel()
+        title.translatesAutoresizingMaskIntoConstraints = false
+        title.textColor = UIColor.textLight
         title.font = UIFont.systemFont(ofSize: 20.height, weight: .semibold)
         
         return title
