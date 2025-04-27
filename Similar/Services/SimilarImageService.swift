@@ -37,7 +37,7 @@ final class SimilarImageService: SimilarImageServiceProtocol {
     func searchSimilars(_ assets: inout Set<PHAsset>) async -> Set<[PHAsset]> {
         var resultSet = Set<[PHAsset]>()
         var allCount = assets.count
-        print("Start count \(assets.count)")
+       
         while !assets.isEmpty {
             guard let originalAsset = assets.popFirst(),
                   let originalDate = originalAsset.creationDate?.withOutTime,

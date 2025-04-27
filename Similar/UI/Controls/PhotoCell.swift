@@ -20,18 +20,7 @@ final class PhotoCell: UICollectionViewCell {
         return imageView
     }()
     
-    let checkButton: UIImageView = {
-        let checkButton = UIImageView()
-        checkButton.translatesAutoresizingMaskIntoConstraints = false
-        checkButton.contentMode = .scaleToFill
-        checkButton.image = UIImage.unCheck
-        NSLayoutConstraint.activate([
-            checkButton.heightAnchor.constraint(equalTo: checkButton.widthAnchor),
-            checkButton.widthAnchor.constraint(equalToConstant: 30.width)
-        ])
-        
-        return checkButton
-    }()
+    let checkButton = CheckButtonView()
         
     var model: PhotoViewModel!
     var showImageAction: ((PHAsset) -> ())?
