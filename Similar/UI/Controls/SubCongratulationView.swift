@@ -8,8 +8,10 @@
 import UIKit
 
 final class SubCongratulationView: UIView {
-    
+    let imageView: UIImageView
+    var animate = false
     init(image: UIImage, text: String, selected: String) {
+        imageView = factoryView(UIImageView.self)
         super.init(frame: .zero)
         translatesAutoresizingMaskIntoConstraints = false
         
@@ -25,7 +27,7 @@ final class SubCongratulationView: UIView {
         attributString.addAttribute(.foregroundColor, value: UIColor(resource: .textSelected), range: range)
         attributString.addAttribute(.font, value: UIFont.systemFont(ofSize: 20.height, weight: .bold), range: range)
         textLabel.attributedText = attributString
-        let imageView = factoryView(UIImageView.self)
+
         imageView.image = image
         imageView.contentMode = .scaleAspectFit
         addSubview(imageView)
@@ -44,5 +46,14 @@ final class SubCongratulationView: UIView {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        if animate { return }
+        animate = true
+        UIView.animate(withDuration: TimeInterval.random(in: 0.3...1), delay: TimeInterval.random(in: 0.3...0.5), options: [.repeat, .autoreverse]) {
+            self.imageView.transform = .init(scaleX: 1.1, y: 1.1)
+        }
     }
 }

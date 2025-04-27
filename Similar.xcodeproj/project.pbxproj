@@ -147,7 +147,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 2PUZB9SADS;
+				DEVELOPMENT_TEAM = D849N95D83;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Similar/Resources/Info.plist;
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Search similar photos, delete selected similar photos";
@@ -181,7 +181,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 2PUZB9SADS;
+				DEVELOPMENT_TEAM = D849N95D83;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Similar/Resources/Info.plist;
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Search similar photos, delete selected similar photos";

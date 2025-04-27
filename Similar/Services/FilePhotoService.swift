@@ -11,6 +11,7 @@ import Photos
 protocol FilePhotoServiceProtocol: AnyObject {
     func checkAccess() async -> Bool
     func load() async -> Set<PHAsset>
+    func delete(_ assets: [PHAsset]) async -> Int
 }
 
 enum FilePhotoServiceFactory {
@@ -29,9 +30,9 @@ final class FilePhotoService: FilePhotoServiceProtocol {
     
     func load() async -> Set<PHAsset>  {
         let options = PHFetchOptions()
-        //options.sortDescriptors = [NSSortDescriptor(key: "", ascending: true)]
-        options.includeAllBurstAssets = true
-        options.includeHiddenAssets = true
+        options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+        options.includeAllBurstAssets = false
+        options.includeHiddenAssets = false
         options.includeAssetSourceTypes = .typeUserLibrary
 
         let result = PHAsset.fetchAssets(with: PHAssetMediaType.image, options: options)
@@ -44,6 +45,22 @@ final class FilePhotoService: FilePhotoServiceProtocol {
         return assets
 
     }
-                                     
+         
+    func delete(_ assets: [PHAsset]) async -> Int {
+        await withCheckedContinuation { continuation in
+            let deleteCount = assets.count
+            PHPhotoLibrary.shared().performChanges({
+                PHAssetChangeRequest.deleteAssets(assets as NSFastEnumeration)
+                
+            }) { success, error in
+                if let error {
+                    print("Failed to delete photos: \(error)")
+                }
+                continuation.resume(returning: success ? deleteCount : 0)
+            }
+        }
+        
+    }
+    
                                      
 }

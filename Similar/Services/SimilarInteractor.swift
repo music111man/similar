@@ -7,16 +7,17 @@
 
 import Foundation
 
-protocol MainInteractorProtocol: AnyObject {
+protocol SimilarInteractorProtocol: AnyObject {
+    func setSimilar(value: Double)
     func searchSimilar() async
     func deteteSimilar() async
 }
 
 @MainActor
-class SimilarManagerFactory {
+class SimilarInteractorFactory {
     private init() {}
-    static func createManager(presenterDelegate: StoragePresenterDelegate, routerDelegate: RouterDelegate) -> some MainInteractorProtocol {
-        let manager = MainInteractor(router: RouterFactory.create(routerDelegate),
+    static func create(presenterDelegate: StoragePresenterDelegate, routerDelegate: RouterDelegate) -> some SimilarInteractorProtocol {
+        let manager = SimilarInteractor(router: RouterFactory.create(routerDelegate),
                                      presenter: StoragePresenterFactory.create(presenterDelegate), fileService: FilePhotoServiceFactory.create(),
                                      similarService: SimilarImageServiceFactory.create())
         
@@ -24,7 +25,7 @@ class SimilarManagerFactory {
     }
 }
 
-final class MainInteractor: MainInteractorProtocol {
+final class SimilarInteractor: SimilarInteractorProtocol {
 
     let presenter: StoragePresenterProtocol
     let  router: RouterProtocol
@@ -46,8 +47,20 @@ final class MainInteractor: MainInteractorProtocol {
                 await self.router.showImage(asset)
             }
         }
+        self.similarService.observeSearchStatus { remainsToProcessCount in
+            Task {
+                await self.presenter.showSearchProcess(remainsToProcessCount)
+            }
+        }
+        setSimilar(value: UserDefaults.degreeOfSimilarity)
     }
     
+    func setSimilar(value: Double) {
+        similarService.degreeOfSimilarity = Float((100 - value) * 0.01)
+        print(similarService.degreeOfSimilarity)
+        UserDefaults.degreeOfSimilarity = value
+        presenter.setSimilar(value: value)
+    }
     
     @MainActor
     func searchSimilar() async {
@@ -59,11 +72,16 @@ final class MainInteractor: MainInteractorProtocol {
     }
     
     func deteteSimilar() async {
-        guard await router.ackToDelete() else { return }
-        await presenter.showDeleteProcess()
-        try? await Task.sleep(nanoseconds: 1_000_000_000)
-        await presenter.showCongratulation()
-        await router.showCongratulation(deletedCount: presenter.storage?.checkedCount ?? 0)
+        guard let assets = presenter.storage?.checketAssets, !assets.isEmpty  else { return }
+        
+        await presenter.visibleDeleteProcess()
+        let deleteCount = await fileService.delete(assets)
+        if deleteCount == 0 {
+            await presenter.undoDeleteProcess()
+            return
+        }
+
+        await router.showCongratulation(deletedCount: deleteCount)
         await searchSimilar()
         
         return

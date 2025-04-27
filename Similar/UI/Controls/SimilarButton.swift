@@ -31,7 +31,7 @@ final class SimilarButton: UIView {
         super.init(frame: .zero)
         
         translatesAutoresizingMaskIntoConstraints = false
-        backgroundResourceColor = .backgroundDark
+        backgroundColor = UIColor.backgroundDark
         layer.cornerRadius = 24.height
         title.localizableText = text
         title.insetsInCenter(parent: self, offsetX: (image == nil ? 0 : 24))

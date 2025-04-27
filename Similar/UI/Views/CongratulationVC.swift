@@ -60,7 +60,7 @@ final class CongratulationVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundResourceColor = .backgroundLight
+        view.backgroundColor = UIColor.backgroundLight
         view.addSubview(image)
         view.addSubview(titleLabel)
         
@@ -104,6 +104,17 @@ final class CongratulationVC: UIViewController {
         
         button.onTap {
             self.dismiss(animated: true)
+        }
+        
+        
+        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        UIView.animate(withDuration: 1, delay: 0.3, options: [.repeat, .autoreverse]) {
+            self.image.transform = .init(scaleX: 1.2, y: 1.2)
         }
     }
     

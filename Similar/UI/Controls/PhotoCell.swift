@@ -25,9 +25,6 @@ final class PhotoCell: UICollectionViewCell {
         checkButton.translatesAutoresizingMaskIntoConstraints = false
         checkButton.contentMode = .scaleToFill
         checkButton.image = UIImage.unCheck
-        checkButton.layer.cornerRadius = 10.width
-        checkButton.layer.borderWidth = 1
-        checkButton.layer.borderColor = UIColor.backgroundDark.cgColor
         NSLayoutConstraint.activate([
             checkButton.heightAnchor.constraint(equalTo: checkButton.widthAnchor),
             checkButton.widthAnchor.constraint(equalToConstant: 30.width)
@@ -70,7 +67,9 @@ final class PhotoCell: UICollectionViewCell {
         }
         checkButton.image = model.isChecked ? UIImage.check : UIImage.unCheck
         Task {
+            imageView.showActivity = true
             imageView.image = await model.image
+            imageView.showActivity = false
         }
     }
 }

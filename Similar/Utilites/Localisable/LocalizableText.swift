@@ -22,7 +22,8 @@ enum LocalizableText: String, CustomStringConvertible {
     }
     
     case titleSimilar, deleteSimilars, subTitlePhotos, subTitleSelected, congratulations,
-         selectAll, deSelectAll, titleAlertDelete, subTitleAlertDelete, cancel, delete,
+         selectAll, deSelectAll, titleAlertDelete, subTitleAlertDelete, cancel, ok, delete,
          savedUsingCleanup, minutes, reviewMessage, great, youHaveDeleted, searchSilimars,
-         deleteSimmilars, goToSettings, enableAccess, enableAccessDesc
+         deleteSimmilars, goToSettings, enableAccess, enableAccessDesc, searching, deleteError,
+         deleteErrorDesc
 }

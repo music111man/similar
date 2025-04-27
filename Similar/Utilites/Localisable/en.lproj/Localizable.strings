@@ -32,3 +32,9 @@
 "goToSettings" = "Settings";
 "enableAccess" = "Access to the gallery";
 "enableAccessDesc" = "The app requires full access to the gallery!";
+
+"searching" = "Searching... remains to process %@ photos";
+"ok" = "Ok";
+
+"deleteError" = "Delete error!";
+"deleteErrorDesc" = "Failed to delete checked photos (((";

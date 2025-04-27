@@ -12,7 +12,6 @@ protocol RouterDelegate: AnyObject {
 }
 
 protocol RouterProtocol: AnyObject {
-    func ackToDelete() async -> Bool
     func showCongratulation(deletedCount: Int) async
     func settingsPromt() async
     func showImage( _ asset: PHAsset) async
@@ -33,23 +32,6 @@ final class Router: RouterProtocol {
     
     weak var delegate: RouterDelegate?
    
-    func ackToDelete() async -> Bool {
-        return await withCheckedContinuation { continuation in
-            
-            let alert = UIAlertController(title: LocalizableText.titleAlertDelete.description,
-                                          message: LocalizableText.subTitleAlertDelete.description,
-                                          preferredStyle: .alert)
-            
-            alert.addAction(UIAlertAction(title: LocalizableText.delete.description, style: .destructive) { _ in
-                
-                continuation.resume(returning: true)
-            })
-            alert.addAction(UIAlertAction(title: LocalizableText.cancel.description, style: .cancel) {_ in
-                continuation.resume(returning: false)
-            })
-            delegate?.presentView(alert)
-        }
-    }
     
     func showCongratulation(deletedCount: Int) async {
         self.delegate?.presentView(CongratulationVC(deletedCount: deletedCount))
@@ -75,6 +57,7 @@ final class Router: RouterProtocol {
             delegate?.presentView(alert)
         }
     }
+    
     
     func showImage(_ asset: PHAsset) async {
         

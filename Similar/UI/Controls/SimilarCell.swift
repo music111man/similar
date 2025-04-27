@@ -38,7 +38,7 @@ final class SimilarCell: UITableViewCell {
         contentView.addSubview(titleLabel)
         contentView.addSubview(button)
         contentView.addSubview(collectionView)
-        
+        backgroundColor = UIColor.clear
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo:  contentView.topAnchor, constant: 20.height),
             titleLabel.leadingAnchor.constraint(equalTo:  contentView.leadingAnchor, constant: 17.width),

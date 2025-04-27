@@ -11,16 +11,19 @@ import Photos
 protocol StoragePresenterDelegate: AnyObject {
     var checkedCountMessage: String? { set get }
     var topCountMessage: String { set get }
+    var similarValueTitle: String { set get }
+    var activateRefreshButton: Bool { get set }
     var table: UITableView { get }
-    
 }
 
 protocol StoragePresenterProtocol: AnyObject {
-
     var storage: SimilarStorage? { get set }
+    func setSimilar(value: Double)
     func openImage(_ action: @escaping (PHAsset) -> ())
-    func showDeleteProcess() async
-    func showCongratulation() async
+    func visibleDeleteProcess() async
+    func undoDeleteProcess() async
+    func showSearchProcess(_ remainsToProcess: Int) async
+    
 }
 
 enum StoragePresenterFactory {
@@ -34,15 +37,16 @@ enum StoragePresenterFactory {
 
 
 final class StoragePresenter: NSObject, StoragePresenterProtocol {
-    
+
     private var photoCount = 0
     
     @MainActor
     var storage: SimilarStorage? {
         didSet {
             defer { delegate?.table.reloadData() }
+            delegate?.activateRefreshButton = storage != nil
             guard let storage else {
-                delegate?.table.showActivity = true
+                self.delegate?.activateRefreshButton = false
                 self.formatCheckedCountMessage(nil)
                 return
             }
@@ -70,30 +74,37 @@ final class StoragePresenter: NSObject, StoragePresenterProtocol {
 
     }
     
+    func setSimilar(value: Double) {
+        delegate?.similarValueTitle = "Similar \(Int(value))%"
+    }
+    
+    @MainActor
+    func showSearchProcess(_ remainsToProcess: Int) async {
+        self.delegate?.topCountMessage = LocalizableText.searching.with(value: remainsToProcess)
+    }
+    
     private func formatCheckedCountMessage(_ count: Int?) {
         guard let count else {
             self.delegate?.topCountMessage = LocalizableText.searchSilimars.description
             self.delegate?.checkedCountMessage = nil
             return
         }
-        self.delegate?.topCountMessage = LocalizableText.subTitlePhotos.with(value: photoCount) + " • " + LocalizableText.subTitlePhotos.with(value: count)
+        self.delegate?.topCountMessage = LocalizableText.subTitlePhotos.with(value: photoCount) + " • " + LocalizableText.subTitleSelected.with(value: count)
         self.delegate?.checkedCountMessage = count == 0 ? nil : LocalizableText.deleteSimilars.with(value: count)
     }
     
     @MainActor
-    func showDeleteProcess() async {
-        self.delegate?.table.showActivity = true
+    func visibleDeleteProcess() async {
+        self.delegate?.activateRefreshButton = false
         self.delegate?.checkedCountMessage = nil
         self.delegate?.topCountMessage = LocalizableText.deleteSimmilars.description
-        
-        self.delegate?.table.isUserInteractionEnabled = false
-    }
-    @MainActor
-    func showCongratulation() async {
-        self.delegate?.table.showActivity = false
-        self.delegate?.table.isUserInteractionEnabled = true
     }
     
+    @MainActor
+    func undoDeleteProcess() async {
+        self.delegate?.activateRefreshButton = true
+        formatCheckedCountMessage(storage?.checkedCount)
+    }
 }
 
 extension StoragePresenter: UITableViewDataSource {

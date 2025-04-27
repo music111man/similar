@@ -31,7 +31,7 @@ final class PhotoViewver: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundResourceColor = .background
+        view.backgroundColor = UIColor.background
         imageView.insetsIn(parent: view)
         let button = UIButton(type: .close)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -47,8 +47,11 @@ final class PhotoViewver: UIViewController {
             self.dismiss(animated: true)
         }
         Task {
+            imageView.showActivity = true
             imageView.image = await asset.detailsImage
+            imageView.showActivity = false
         }
+
     }
     
 }

@@ -12,19 +12,6 @@ extension UIView {
     static var identifier: String {
         String(describing: self)
     }
-    
-    var backgroundResourceColor: ColorResource? {
-        get { nil }
-        set {
-            guard let newValue else {
-                backgroundColor = nil
-                
-                return
-            }
-            backgroundColor = UIColor(resource: newValue)
-        }
-    }
-    
     func insetsIn(parent: UIView, top: Int = 0, bottom: Int = 0, left: Int = 0, right: Int = 0) {
         self.translatesAutoresizingMaskIntoConstraints = false
         parent.addSubview(self)
@@ -233,6 +220,7 @@ fileprivate let detailsOptions: PHImageRequestOptions = {
 }()
 let screenBounds = UIScreen.main.bounds
 extension PHAsset {
+    @MainActor
     var previewImage: UIImage? {
         get async {
             return await withCheckedContinuation { continuation in
@@ -259,6 +247,101 @@ extension PHAsset {
 
         }
     }
+    
+   
+    static func getURL(ofPhotoWith mPhasset: PHAsset, completionHandler : @escaping ((_ responseURL : URL?) -> Void)) {
+        if mPhasset.mediaType == .image {
+            let options: PHContentEditingInputRequestOptions = PHContentEditingInputRequestOptions()
+            options.canHandleAdjustmentData = {(adjustmeta: PHAdjustmentData) -> Bool in
+                return true
+            }
+            mPhasset.requestContentEditingInput(with: options, completionHandler: { (contentEditingInput, info) in
+                if let fullSizeImageUrl = contentEditingInput?.fullSizeImageURL {
+                    completionHandler(fullSizeImageUrl)
+                } else {
+                    completionHandler(nil)
+                }
+            })
+        } else if mPhasset.mediaType == .video {
+            let options: PHVideoRequestOptions = PHVideoRequestOptions()
+            options.version = .original
+            PHImageManager.default().requestAVAsset(forVideo: mPhasset, options: options, resultHandler: { (asset, audioMix, info) in
+                if let urlAsset = asset as? AVURLAsset {
+                    let localVideoUrl = urlAsset.url
+                    completionHandler(localVideoUrl)
+                } else {
+                    completionHandler(nil)
+                }
+            })
+        }
+        
+    }
+    
+   
+    
+    var imageUrl: URL? {
+        get async {
+            return await withCheckedContinuation { continuation in
+                let options = PHContentEditingInputRequestOptions()
+                options.canHandleAdjustmentData = {(adjustmeta: PHAdjustmentData) -> Bool in
+                    return true
+                }
+                self.requestContentEditingInput(with: options, completionHandler: { (contentEditingInput, info) in
+                    if let fullSizeImageUrl = contentEditingInput?.fullSizeImageURL {
+                        continuation.resume(returning: fullSizeImageUrl)
+                    } else {
+                        continuation.resume(returning:nil)
+                    }
+                })
+            }
+        }
+    }
+    
+    var videoUrl: URL? {
+        get async {
+            return await withCheckedContinuation { continuation in
+                let options: PHVideoRequestOptions = PHVideoRequestOptions()
+                options.version = .original
+                PHImageManager.default().requestAVAsset(forVideo: self, options: options, resultHandler: { (asset, audioMix, info) in
+                    if let urlAsset = asset as? AVURLAsset {
+                        let localVideoUrl = urlAsset.url
+                        continuation.resume(returning: localVideoUrl)
+                    } else {
+                        continuation.resume(returning:nil)
+                    }
+                })
+            }
+        }
+    }
+    
+    var ciImage: CIImage? {
+        get async {
+            guard let url = await self.imageUrl,
+                  let image = CIImage(contentsOf: url) else { return nil }
+            
+            return image
+        }
+    }
+}
+
+extension CIImage {
+    var creatingExifDate: String? {
+        guard let exif = self.properties["{Exif}"] as? [String: Any],
+              let dateString = exif["DateTimeOriginal"] as? String else { return nil }
+        
+        return dateString
+    }
+}
+
+extension Date {
+
+    var withOutTime: Date? {
+        let components = Calendar.current.dateComponents([.year, .month, .day], from: self)
+        let date = Calendar.current.date(from: components)
+        
+        return date
+    }
+
 }
 
 
@@ -270,6 +353,13 @@ func factoryView<UI: UIView>(_ typeOff: UI.Type = UIView.self) -> UI {
     return element
 }
 
-//com.music111man.similar
-//com.bokmal.coiler
+extension UserDefaults {
+    static var degreeOfSimilarity: Double {
+        get { (UserDefaults.standard.value(forKey: "degreeOfSimilarity") as? Double) ?? 70.0 }
+        set {
+            UserDefaults.standard.set(newValue, forKey: "degreeOfSimilarity")
+        }
+    }
+}
+
 

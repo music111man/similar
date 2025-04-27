@@ -27,6 +27,12 @@ final class SimilarStorage {
         }
     }
     
+    var checketAssets: [PHAsset] {
+        self.similarCollection.flatMap{ $0.photos }
+            .filter{ $0.isChecked }
+            .map{ $0.asset }
+    }
+    
     func onCheck(_ action: @escaping (Int) -> ()) {
         self.action = action
     }
