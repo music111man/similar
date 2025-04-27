@@ -27,20 +27,20 @@ final class SimilarButton: UIView {
     
     private let transformHide: CGAffineTransform = .init(scaleX: 0.01, y: 0.01)
     
-    init(text: LocalizableText, image resource: ImageResource? = nil, isHidden: Bool = false) {
+    init(text: LocalizableText, image: UIImage? = nil, isHidden: Bool = false) {
         super.init(frame: .zero)
         
         translatesAutoresizingMaskIntoConstraints = false
         backgroundResourceColor = .backgroundDark
         layer.cornerRadius = 24.height
         title.localizableText = text
-        title.insetsInCenter(parent: self, offsetX: (resource == nil ? 0 : 24))
+        title.insetsInCenter(parent: self, offsetX: (image == nil ? 0 : 24))
         NSLayoutConstraint.activate([
             heightAnchor.constraint(equalToConstant: 60.height),
         ])
-        guard let resource = resource else { return }
+        guard let image = image else { return }
         
-        let imageView = UIImageView(image: resource.image)
+        let imageView = UIImageView(image: image)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
         addSubview(imageView)

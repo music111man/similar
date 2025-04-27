@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "image-load-failed.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

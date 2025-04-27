@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Photos
 
 final class SimilarStorage {
     
@@ -18,17 +19,12 @@ final class SimilarStorage {
     
     var action: ((Int) -> ())?
     
-    init() {
-        for i in (0...Int.random(in: 9...20)) {
-            let files = Array(repeating: "\(i)", count: Int.random(in: 2...6))
-            add(files)
+    init(_ set: Set<[PHAsset]>) {
+        set.forEach {
+            similarCollection.append(SimilarViewModel($0) {
+                self.action?(self.checkedCount)
+            })
         }
-    }
-    
-    func add(_ files: [String]) {
-        similarCollection.append(SimilarViewModel(files) {
-            self.action?(self.checkedCount)
-        })
     }
     
     func onCheck(_ action: @escaping (Int) -> ()) {

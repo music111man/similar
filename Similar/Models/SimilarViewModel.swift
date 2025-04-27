@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Photos
 
 final class SimilarViewModel {
     
@@ -28,22 +29,33 @@ final class SimilarViewModel {
         self.checkedAction = checkedAction
     }
     
-    init(_ files: [String], _ checkedAction: @escaping EmptyAction) {
+    init(_ assets: [PHAsset], _ checkedAction: @escaping EmptyAction) {
         self.checkedAction = checkedAction
-        files.forEach { createPhoto($0) }
+        assets.forEach { createPhoto($0) }
     }
 
     func onCheck(_ action: @escaping (Int) -> ()) {
         checkedCountAction = action
     }
   
-    func createPhoto(_ path: String) {
-        photos.append(PhotoViewModel(filePath: path, validateCheked))
+    func createPhoto(_ asset: PHAsset) {
+        photos.append(PhotoViewModel(asset: asset, validateCheked))
     }
     
     func validateCheked() {
         checkedCount = photos.count(where: { $0.isChecked })
         
     }
+}
+
+extension SimilarViewModel: Equatable, Hashable {
+    static func == (lhs: SimilarViewModel, rhs: SimilarViewModel) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
 }
 

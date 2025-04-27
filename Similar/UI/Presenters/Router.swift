@@ -6,15 +6,33 @@
 //
 
 import UIKit
+import Photos
 protocol RouterDelegate: AnyObject {
     func presentView(_ controller: UIViewController)
 }
 
+protocol RouterProtocol: AnyObject {
+    func ackToDelete() async -> Bool
+    func showCongratulation(deletedCount: Int) async
+    func settingsPromt() async
+    func showImage( _ asset: PHAsset) async
+}
+
+enum RouterFactory {
+    @MainActor
+    static func create(_ delegate: RouterDelegate) -> some RouterProtocol {
+        let router = Router()
+        router.delegate = delegate
+        
+        return router
+    }
+}
+
 @MainActor
-final class Router {
+final class Router: RouterProtocol {
     
     weak var delegate: RouterDelegate?
-    
+   
     func ackToDelete() async -> Bool {
         return await withCheckedContinuation { continuation in
             
@@ -33,7 +51,7 @@ final class Router {
         }
     }
     
-    func showCongratulation(deletedCount: Int) {
+    func showCongratulation(deletedCount: Int) async {
         self.delegate?.presentView(CongratulationVC(deletedCount: deletedCount))
     }
 
@@ -58,7 +76,8 @@ final class Router {
         }
     }
     
-    func showImage( _ image: UIImage) {
-        delegate?.presentView(PhotoViewver(image))
+    func showImage(_ asset: PHAsset) async {
+        
+        delegate?.presentView(PhotoViewver(asset))
     }
 }

@@ -21,7 +21,7 @@ final class SimilarCell: UITableViewCell {
     
     let button: UIButton = {
         let button = factoryView(UIButton.self)
-        button.textResourceColor = .textSelected
+        button.textColor = UIColor.textSelected
         button.localizableText = .selectAll
         button.font = UIFont.systemFont(ofSize: 16.height, weight: .medium)
         

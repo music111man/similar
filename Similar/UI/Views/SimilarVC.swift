@@ -42,7 +42,7 @@ final class SimilarVC: UIViewController {
         return table
     }()
     
-    var similarManager: SimilarManagerProtocol!
+    var similarManager: MainInteractorProtocol!
     
     init() {
         super.init(nibName: nil, bundle: nil)

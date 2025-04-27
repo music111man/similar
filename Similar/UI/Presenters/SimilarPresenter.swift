@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Photos
 
 protocol SimilarPresenterDelegate: AnyObject {
     var collection: UICollectionView { get }
@@ -24,7 +25,7 @@ final class SimilarPresenter: NSObject {
             delegate?.collection.reloadData()
         }
     }
-    private var tapAction: ((UIImage) ->())?
+    private var tapAction: ((PHAsset) ->())?
     
     var isAllChecked: Bool {
         guard let model else { return false }
@@ -35,12 +36,11 @@ final class SimilarPresenter: NSObject {
     init(_ delegate: SimilarPresenterDelegate) {
         super.init()
         self.delegate = delegate
-        self.delegate?.collection.delegate = self
         self.delegate?.collection.dataSource = self
         self.delegate?.collection.register(PhotoCell.self, forCellWithReuseIdentifier: PhotoCell.identifier)
     }
     
-    func onTapImage(_ action: @escaping (UIImage) -> ()) {
+    func onTapImage(_ action: @escaping (PHAsset) -> ()) {
         tapAction = action
     }
     
@@ -54,9 +54,9 @@ extension SimilarPresenter: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoCell.identifier, for: indexPath) as! PhotoCell
-        if let photo = model?.photos[indexPath.row] {
-            cell.configure(photo) { image in
-                self.tapAction?(image)
+        if let model = model?.photos[indexPath.row] {
+            cell.configure(model) { asset in
+                self.tapAction?(asset)
             }
         }
         
@@ -64,11 +64,3 @@ extension SimilarPresenter: UICollectionViewDataSource {
     }
 }
 
-extension SimilarPresenter: UICollectionViewDelegate {
-    
-    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-        guard let image = model?.photos[indexPath.row].image else { return }
-        
-        tapAction?(image)
-    }
-}

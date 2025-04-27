@@ -12,7 +12,7 @@ final class CongratulationVC: UIViewController {
     let image: UIImageView = {
         let view = factoryView(UIImageView.self)
         view.contentMode = .scaleAspectFit
-        view.image = ImageResource.congratulations.image
+        view.image = UIImage.congratulations
         NSLayoutConstraint.activate([
             view.heightAnchor.constraint(equalTo: view.widthAnchor),
             view.widthAnchor.constraint(equalToConstant: 230.width)
@@ -66,12 +66,12 @@ final class CongratulationVC: UIViewController {
         
         let deleteCountText = LocalizableText.subTitlePhotos.with(value: deletedCount)
         let deleteText = "\(LocalizableText.youHaveDeleted.description)\(deleteCountText)"
-        let subDeleteView = SubCongratulationView(image: ImageResource.starts.image, text: deleteText, selected: deleteCountText)
+        let subDeleteView = SubCongratulationView(image: UIImage.starts, text: deleteText, selected: deleteCountText)
         view.addSubview(subDeleteView)
         
         let saveCountText = LocalizableText.minutes.with(value: deletedCount)
         let saveText = LocalizableText.savedUsingCleanup.with(value: saveCountText)
-        let subSaveView = SubCongratulationView(image: ImageResource.saved.image, text: saveText, selected: saveCountText)
+        let subSaveView = SubCongratulationView(image: UIImage.saved, text: saveText, selected: saveCountText)
         view.addSubview(subSaveView)
         
         view.addSubview(subLabel)

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Photos
 
 extension UIView {
     static var identifier: String {
@@ -87,7 +88,7 @@ extension UIView {
                 if subviews.last is UIActivityIndicatorView { return }
                 let activity = UIActivityIndicatorView()
                 activity.style = .large
-                activity.color = ColorResource.backgroundDark.color
+                activity.color = UIColor.backgroundDark
                 activity.insetsInCenter(parent: self)
                 activity.startAnimating()
             } else {
@@ -141,7 +142,8 @@ extension UIButton {
             setTitle(newValue, for: .normal)
         }
     }
-    var textResourceColor: ColorResource? {
+    
+    var textColor: UIColor? {
         get { nil }
         set {
             guard let newValue else {
@@ -149,11 +151,11 @@ extension UIButton {
                 
                 return
             }
-            setTitleColor(newValue.color, for: .normal)
+            setTitleColor(newValue, for: .normal)
         }
     }
     
-    var image: ImageResource? {
+    var image: UIImage? {
         get { return nil }
         set {
             guard let newValue else {
@@ -161,7 +163,7 @@ extension UIButton {
                 
                 return
             }
-            setImage(newValue.image, for: .normal)
+            setImage(newValue, for: .normal)
         }
     }
     var font: UIFont? {
@@ -174,21 +176,6 @@ extension UIButton {
             }
             titleLabel?.font = newValue
         }
-    }
-}
-
-extension ColorResource {
-    var color: UIColor {
-        UIColor(resource: self)
-    }
-    var cgColor: CGColor {
-        UIColor(resource: self).cgColor
-    }
-    
-}
-extension ImageResource {
-    var image: UIImage {
-        UIImage(resource: self)
     }
 }
 
@@ -225,10 +212,64 @@ extension Int {
     }
 }
 
+fileprivate let previewOptions: PHImageRequestOptions = {
+    let options = PHImageRequestOptions()
+    options.resizeMode = .fast
+    options.isNetworkAccessAllowed = false
+    options.deliveryMode = PHImageRequestOptionsDeliveryMode.highQualityFormat
+    options.isSynchronous = false
+    
+    return options
+}()
+
+fileprivate let detailsOptions: PHImageRequestOptions = {
+    let options = PHImageRequestOptions()
+    options.resizeMode = .none
+    options.isNetworkAccessAllowed = false
+    options.deliveryMode = PHImageRequestOptionsDeliveryMode.highQualityFormat
+    options.isSynchronous = false
+    
+    return options
+}()
+let screenBounds = UIScreen.main.bounds
+extension PHAsset {
+    var previewImage: UIImage? {
+        get async {
+            return await withCheckedContinuation { continuation in
+                PHImageManager.default().requestImage(for: self,
+                                                      targetSize: CGSize(width: 183.width, height: 215.height),
+                                                      contentMode: PHImageContentMode.aspectFill,
+                                                      options: previewOptions) { image, _ in
+                    continuation.resume(returning: image)
+                }
+            }
+        }
+    }
+    
+    var detailsImage: UIImage? {
+        get async {
+            return await withCheckedContinuation { continuation in
+                PHImageManager.default().requestImage(for: self,
+                                                      targetSize: screenBounds.size,
+                                                      contentMode: PHImageContentMode.aspectFit,
+                                                      options: detailsOptions) { image, _ in
+                    continuation.resume(returning: image)
+                }
+            }
+
+        }
+    }
+}
+
+
+
 func factoryView<UI: UIView>(_ typeOff: UI.Type = UIView.self) -> UI {
     let element = UI()
     element.translatesAutoresizingMaskIntoConstraints = false
     
     return element
 }
+
+//com.music111man.similar
+//com.bokmal.coiler
 

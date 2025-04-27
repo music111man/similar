@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Photos
 
 final class PhotoViewver: UIViewController {
     
@@ -15,10 +16,11 @@ final class PhotoViewver: UIViewController {
         
         return image
     }()
+    let asset: PHAsset
     
-    init(_ image: UIImage) {
+    init(_ asset: PHAsset) {
+        self.asset = asset
         super.init(nibName: nil, bundle: nil)
-        imageView.image = image
         modalPresentationStyle = .fullScreen
         modalTransitionStyle = .crossDissolve
     }
@@ -44,5 +46,9 @@ final class PhotoViewver: UIViewController {
         button.onTap {
             self.dismiss(animated: true)
         }
+        Task {
+            imageView.image = await asset.detailsImage
+        }
     }
+    
 }

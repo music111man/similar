@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Photos
 
 final class PhotoCell: UICollectionViewCell {
     let imageView: UIImageView = {
@@ -15,7 +16,7 @@ final class PhotoCell: UICollectionViewCell {
         imageView.layer.cornerRadius = 14.width
         imageView.clipsToBounds = true
         imageView.layer.borderWidth = 0.5
-        imageView.layer.borderColor = ColorResource.backPhoto.cgColor
+        imageView.layer.borderColor = UIColor.backPhoto.cgColor
         return imageView
     }()
     
@@ -23,10 +24,10 @@ final class PhotoCell: UICollectionViewCell {
         let checkButton = UIImageView()
         checkButton.translatesAutoresizingMaskIntoConstraints = false
         checkButton.contentMode = .scaleToFill
-        checkButton.image = ImageResource.unCheck.image
-        checkButton.layer.cornerRadius = 3.width
+        checkButton.image = UIImage.unCheck
+        checkButton.layer.cornerRadius = 10.width
         checkButton.layer.borderWidth = 1
-        checkButton.layer.borderColor = ColorResource.backPhoto.cgColor
+        checkButton.layer.borderColor = UIColor.backgroundDark.cgColor
         NSLayoutConstraint.activate([
             checkButton.heightAnchor.constraint(equalTo: checkButton.widthAnchor),
             checkButton.widthAnchor.constraint(equalToConstant: 30.width)
@@ -36,7 +37,7 @@ final class PhotoCell: UICollectionViewCell {
     }()
         
     var model: PhotoViewModel!
-    var showImageAction: ((UIImage) -> ())?
+    var showImageAction: ((PHAsset) -> ())?
     override init(frame: CGRect) {
         super.init(frame: frame)
        
@@ -51,9 +52,7 @@ final class PhotoCell: UICollectionViewCell {
             self.model.isChecked.toggle()
         }
         imageView.onTap {
-            guard let image = self.imageView.image else { return }
-            
-            self.showImageAction?(image)
+            self.showImageAction?(self.model.asset)
         }
         
     }
@@ -62,15 +61,17 @@ final class PhotoCell: UICollectionViewCell {
         super.init(coder: coder)
     }
     
-    func configure(_ model: PhotoViewModel, _ action: @escaping (UIImage) -> ()) {
+    func configure(_ model: PhotoViewModel, _ action: @escaping (PHAsset) -> ()) {
         self.model = model
         showImageAction = action
-        imageView.image = model.image
-        model.onChecked { checked in
-            self.checkButton.image = checked ? ImageResource.check.image : ImageResource.unCheck.image
-        }
-        checkButton.image = model.isChecked ? ImageResource.check.image : ImageResource.unCheck.image
         
+        model.onChecked { checked in
+            self.checkButton.image = checked ? UIImage.check : UIImage.unCheck
+        }
+        checkButton.image = model.isChecked ? UIImage.check : UIImage.unCheck
+        Task {
+            imageView.image = await model.image
+        }
     }
 }
 

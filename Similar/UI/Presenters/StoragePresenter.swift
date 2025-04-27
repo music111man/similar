@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Photos
 
 protocol StoragePresenterDelegate: AnyObject {
     var checkedCountMessage: String? { set get }
@@ -14,9 +15,29 @@ protocol StoragePresenterDelegate: AnyObject {
     
 }
 
-@MainActor
-final class StoragePresenter: NSObject {
+protocol StoragePresenterProtocol: AnyObject {
+
+    var storage: SimilarStorage? { get set }
+    func openImage(_ action: @escaping (PHAsset) -> ())
+    func showDeleteProcess() async
+    func showCongratulation() async
+}
+
+enum StoragePresenterFactory {
+    static func create(_ delegate: StoragePresenterDelegate) -> some StoragePresenterProtocol {
+        let presenter = StoragePresenter()
+        presenter.delegate = delegate
+        
+        return presenter
+    }
+}
+
+
+final class StoragePresenter: NSObject, StoragePresenterProtocol {
+    
     private var photoCount = 0
+    
+    @MainActor
     var storage: SimilarStorage? {
         didSet {
             defer { delegate?.table.reloadData() }
@@ -42,10 +63,9 @@ final class StoragePresenter: NSObject {
         }
     }
     
-    var openPhotoAction: ((UIImage) -> ())?
+    var openPhotoAction: ((PHAsset) -> ())?
     
-    
-    func openImage(_ action: @escaping (UIImage) -> ()) {
+    func openImage(_ action: @escaping (PHAsset) -> ()) {
         self.openPhotoAction = action
 
     }
@@ -68,8 +88,8 @@ final class StoragePresenter: NSObject {
         
         self.delegate?.table.isUserInteractionEnabled = false
     }
-
-    func showCongratulation() {
+    @MainActor
+    func showCongratulation() async {
         self.delegate?.table.showActivity = false
         self.delegate?.table.isUserInteractionEnabled = true
     }
